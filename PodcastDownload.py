@@ -16,26 +16,29 @@ class PodcastDownload:
         self.feed_url = feed_url
 
     def run(self):
-        self.get_raw_feed()
         self.read_feed()
         self.feed = feedparser.parse(self.text)
         if DEBUG: self.pretty_print(self.feed, "")
         self.download_files()
 
-    def get_raw_feed(self):
+    def read_feed(self):
         connection = HTTPConnection("static.orf.at")
         connection.request(GET, self.feed_url)
-        self.feed_response = connection.getresponse()
-        if self.feed_response.status != 200:
-            raise IOError("Status " + str(self.feed_response.status) + " from http connection")
+        feed_response = connection.getresponse()
+        self.check_status(feed_response.status)
+        self.read_response_text(feed_response)
+        feed_response.close()
 
-    def read_feed(self):
+    def check_status(self, status):
+        if status != 200:
+            raise IOError("Status " + str(status) + " from http connection")
+
+    def read_response_text(self, feed_response):
         self.text = ""
         while True:
-            line = self.feed_response.readline().decode(UTF8)
+            line = feed_response.readline().decode(UTF8)
             if not line: break
             self.text += line
-        self.feed_response.close()
 
     def pretty_print(self, value, indentation):
         if isinstance(value, dict):
