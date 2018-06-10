@@ -17,7 +17,7 @@ class PodcastDownload:
 
     def run(self):
         self.get_raw_feed()
-        self.read_feed(self.feed_response)
+        self.read_feed()
         self.feed = feedparser.parse(self.text)
         if DEBUG: self.pretty_print(self.feed, "")
         self.download_files()
@@ -29,13 +29,13 @@ class PodcastDownload:
         if self.feed_response.status != 200:
             raise IOError("Status " + str(self.feed_response.status) + " from http connection")
 
-    def read_feed(self, response):
+    def read_feed(self):
         self.text = ""
         while True:
-            line = response.readline().decode(UTF8)
+            line = self.feed_response.readline().decode(UTF8)
             if not line: break
             self.text += line
-        response.close()
+        self.feed_response.close()
 
     def pretty_print(self, value, indentation):
         if isinstance(value, dict):
@@ -59,6 +59,8 @@ class PodcastDownload:
                 if not os.path.isfile(filename):
                     print("Downloading missing file [" + filename + "]")
                     wget.download(url)
+                elif DEBUG:
+                    print("Skipping existing file [" + filename + "]")
 
 
 for argument in sys.argv[1:]:
