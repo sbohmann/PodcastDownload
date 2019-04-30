@@ -1,19 +1,26 @@
+import datetime
+import os.path
+import ssl
+import sys
+import traceback
+import urllib.request
 
-from http.client import HTTPConnection
 import feedparser
 import wget
-import os.path
-import sys
 
 GET = "GET"
 UTF8 = "utf-8"
 DEBUG = False
+DANGEROUSLY_IGNORE_SSL_VALIDITY = False
 
 print(sys.argv)
+
 
 class PodcastDownload:
     def __init__(self, feed_url):
         self.feed_url = feed_url
+        self.feed = None
+        self.text = None
 
     def run(self):
         self.read_feed()
@@ -22,16 +29,23 @@ class PodcastDownload:
         self.download_files()
 
     def read_feed(self):
-        connection = HTTPConnection("static.orf.at")
-        connection.request(GET, self.feed_url)
-        feed_response = connection.getresponse()
-        self.check_status(feed_response.status)
+        feed_filename = self.create_feed_filename()
+        wget.download(self.feed_url, feed_filename)
+        feed_response = urllib.request.urlopen(self.feed_url)
         self.read_response_text(feed_response)
         feed_response.close()
 
-    def check_status(self, status):
-        if status != 200:
-            raise IOError("Status " + str(status) + " from http connection")
+    def create_feed_filename(self):
+        utc_timestamp = datetime.datetime.utcnow()
+        utc_timestamp_string = "%04d%02d%02dT%02d%02d%02d.%02dZ" %\
+                             (utc_timestamp.year,
+                              utc_timestamp.month,
+                              utc_timestamp.day,
+                              utc_timestamp.hour,
+                              utc_timestamp.minute,
+                              utc_timestamp.second,
+                              utc_timestamp.microsecond)
+        return "downloads/feed_" + utc_timestamp_string + ".xml"
 
     def read_response_text(self, feed_response):
         self.text = ""
@@ -58,15 +72,56 @@ class PodcastDownload:
         for entry in self.feed.entries:
             for link in entry.links:
                 url = link.href
-                filename = wget.detect_filename(url)
+                original_filename = wget.detect_filename(url)
+                _, extension = os.path.splitext(original_filename)
+                raw_filename = entry.title
+                filename = 'downloads/' + clean_filename(raw_filename) + extension
                 if not os.path.isfile(filename):
                     print("Downloading missing file [" + filename + "]")
-                    wget.download(url)
+                    wget.download(url, filename)
                 elif DEBUG:
                     print("Skipping existing file [" + filename + "]")
 
 
-for argument in sys.argv[1:]:
-    if argument.startswith("http://"):
-        print("feed url " + argument)
-        PodcastDownload(argument).run()
+def clean_filename(name):
+    result = []
+    for char in name:
+        if 'A' <= char <= 'Z' or 'a' <= char <= 'z' or '0' <= char <= '9':
+            result.append(char)
+        elif ord(char) > 128:
+            result.append(char)
+        else:
+            result.append('_')
+    return ''.join(result)
+
+
+if __name__ == '__main__':
+    feed_urls = []
+
+    for argument in sys.argv[1:]:
+        if argument.startswith("http://") or argument.startswith("https://"):
+            feed_urls.append(argument)
+        elif argument == '--dangerously-ignore-ssl-validity':
+            DANGEROUSLY_IGNORE_SSL_VALIDITY = True
+        else:
+            print("ignoring argument [" + argument + "]")
+
+    if DANGEROUSLY_IGNORE_SSL_VALIDITY:
+        # This is an unfortunate hack. urllib.urlretrieve does not support a context.
+        # Thus, a global override is installed. Please, really never, ever do this
+        # in larger projects where it would affect EVERYTHING else.
+        # Here, there is nothing else, of course, unless you misappropriate this script
+        # as a library.
+        # Dont't do that under any circumstances!!!!!!!
+        # The above if __name__ is '__main__' safeguard is intended to prevent effects
+        # in the case of such use as a library but please, do not rely on this!!!
+        # And also, please do not copy the following line into any base of code,
+        # it really turns of ANY checks against SSL validity.
+        ssl._create_default_https_context = ssl._create_unverified_context
+
+    for url in feed_urls:
+        try:
+            print("feed url " + url)
+            PodcastDownload(url).run()
+        except Exception as error:
+            traceback.print_exc()
