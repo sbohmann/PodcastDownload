@@ -116,7 +116,7 @@ if __name__ == '__main__':
         # The above if __name__ is '__main__' safeguard is intended to prevent effects
         # in the case of such use as a library but please, do not rely on this!!!
         # And also, please do not copy the following line into any base of code,
-        # it really turns of ANY checks against SSL validity.
+        # it really turns off ANY checks against SSL validity.
         ssl._create_default_https_context = ssl._create_unverified_context
 
     for url in feed_urls:
