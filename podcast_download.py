@@ -74,7 +74,6 @@ class PodcastDownload:
         file.close()
 
 
-
 def create_utc_timestamp_string(utc_timestamp):
     return "%04d%02d%02dT%02d%02d%02d.%02dZ" % \
                            (utc_timestamp.year,
