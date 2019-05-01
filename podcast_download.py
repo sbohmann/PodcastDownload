@@ -97,6 +97,9 @@ if __name__ == '__main__':
         else:
             print("ignoring argument [" + argument + "]")
 
+    if len(feed_urls) > 1:
+        raise ValueError('attempting to download multiple feeds at once: ' + str(feed_urls))
+
     if DANGEROUSLY_IGNORE_SSL_VALIDITY:
         # This is an unfortunate hack. urllib.urlretrieve does not support a context.
         # Thus, a global override is installed. Please, really never, ever do this
