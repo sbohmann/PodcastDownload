@@ -21,34 +21,28 @@ print(sys.argv)
 
 class PodcastDownload:
     def __init__(self, feed_url):
+        self.utc_timestamp = datetime.datetime.utcnow()
+        self.utc_timestamp_string = create_utc_timestamp_string(self.utc_timestamp)
         self.feed_url = feed_url
         self.feed = None
         self.text = None
+        self.downloaded_episode_filenames = []
 
     def run(self):
         self.read_feed()
         self.feed = feedparser.parse(self.text)
         if DEBUG: print_feed.pretty_print(self.feed, "")
         self.download_files()
+        self.write_episodes_file()
 
     def read_feed(self):
-        feed_filename = self.create_feed_filename()
-        wget.download(self.feed_url, feed_filename)
+        wget.download(self.feed_url, self.create_feed_filename())
         feed_response = urllib.request.urlopen(self.feed_url)
         self.read_response_text(feed_response)
         feed_response.close()
 
     def create_feed_filename(self):
-        utc_timestamp = datetime.datetime.utcnow()
-        utc_timestamp_string = "%04d%02d%02dT%02d%02d%02d.%02dZ" %\
-                             (utc_timestamp.year,
-                              utc_timestamp.month,
-                              utc_timestamp.day,
-                              utc_timestamp.hour,
-                              utc_timestamp.minute,
-                              utc_timestamp.second,
-                              utc_timestamp.microsecond)
-        return "downloads/feed_" + utc_timestamp_string + ".xml"
+        return "downloads/feed_" + self.utc_timestamp_string + ".xml"
 
     def read_response_text(self, feed_response):
         self.text = ""
@@ -64,12 +58,33 @@ class PodcastDownload:
                 original_filename = wget.detect_filename(url)
                 _, extension = os.path.splitext(original_filename)
                 raw_filename = entry.title
-                filename = 'downloads/' + filenames.clean_filename(raw_filename) + extension
-                if not os.path.isfile(filename):
-                    print("Downloading missing file [" + filename + "]")
-                    wget.download(url, filename)
+                filename = filenames.clean_filename(raw_filename) + extension
+                path = 'downloads/' + filename
+                self.downloaded_episode_filenames.append(filename)
+                if not os.path.isfile(path):
+                    print("Downloading missing file [" + path + "]")
+                    wget.download(url, path)
                 elif DEBUG:
-                    print("Skipping existing file [" + filename + "]")
+                    print("Skipping existing file [" + path + "]")
+
+    def write_episodes_file(self):
+        filename = "downloads/episodes_" + self.utc_timestamp_string + ".txt"
+        file = open(filename, 'w')
+        for episode_filename in self.downloaded_episode_filenames:
+            file.write(episode_filename + '\n')
+        file.close()
+
+
+
+def create_utc_timestamp_string(utc_timestamp):
+    return "%04d%02d%02dT%02d%02d%02d.%02dZ" % \
+                           (utc_timestamp.year,
+                            utc_timestamp.month,
+                            utc_timestamp.day,
+                            utc_timestamp.hour,
+                            utc_timestamp.minute,
+                            utc_timestamp.second,
+                            utc_timestamp.microsecond)
 
 
 if __name__ == '__main__':
