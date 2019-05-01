@@ -42,7 +42,7 @@ class PodcastDownload:
         feed_response.close()
 
     def create_feed_filename(self):
-        return "downloads/feed_" + self.utc_timestamp_string + ".xml"
+        return "feed_" + self.utc_timestamp_string + ".xml"
 
     def read_response_text(self, feed_response):
         self.text = ""
@@ -59,16 +59,15 @@ class PodcastDownload:
                 _, extension = os.path.splitext(original_filename)
                 raw_filename = entry.title
                 filename = filenames.clean_filename(raw_filename) + extension
-                path = 'downloads/' + filename
                 self.downloaded_episode_filenames.append(filename)
-                if not os.path.isfile(path):
-                    print("Downloading missing file [" + path + "]")
-                    wget.download(url, path)
+                if not os.path.isfile(filename):
+                    print("Downloading missing file [" + filename + "]")
+                    wget.download(url, filename)
                 elif DEBUG:
-                    print("Skipping existing file [" + path + "]")
+                    print("Skipping existing file [" + filename + "]")
 
     def write_episodes_file(self):
-        filename = "downloads/episodes_" + self.utc_timestamp_string + ".txt"
+        filename = "episodes_" + self.utc_timestamp_string + ".txt"
         file = open(filename, 'w')
         for episode_filename in self.downloaded_episode_filenames:
             file.write(episode_filename + '\n')
