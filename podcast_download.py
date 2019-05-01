@@ -8,6 +8,9 @@ import urllib.request
 import feedparser
 import wget
 
+import print_feed
+import filenames
+
 GET = "GET"
 UTF8 = "utf-8"
 DEBUG = False
@@ -25,7 +28,7 @@ class PodcastDownload:
     def run(self):
         self.read_feed()
         self.feed = feedparser.parse(self.text)
-        if DEBUG: self.pretty_print(self.feed, "")
+        if DEBUG: print_feed.pretty_print(self.feed, "")
         self.download_files()
 
     def read_feed(self):
@@ -54,20 +57,6 @@ class PodcastDownload:
             if not line: break
             self.text += line
 
-    def pretty_print(self, value, indentation):
-        if isinstance(value, dict):
-            for field in value:
-                print(indentation, field, sep="")
-                self.pretty_print(value[field], indentation + "    ")
-        elif isinstance(value, list):
-            index = 0
-            for element in value:
-                print(indentation, "[", index, "]", sep="")
-                index += 1
-                self.pretty_print(element, indentation + "    ")
-        elif value:
-            print(indentation + str(value))
-
     def download_files(self):
         for entry in self.feed.entries:
             for link in entry.links:
@@ -75,24 +64,12 @@ class PodcastDownload:
                 original_filename = wget.detect_filename(url)
                 _, extension = os.path.splitext(original_filename)
                 raw_filename = entry.title
-                filename = 'downloads/' + clean_filename(raw_filename) + extension
+                filename = 'downloads/' + filenames.clean_filename(raw_filename) + extension
                 if not os.path.isfile(filename):
                     print("Downloading missing file [" + filename + "]")
                     wget.download(url, filename)
                 elif DEBUG:
                     print("Skipping existing file [" + filename + "]")
-
-
-def clean_filename(name):
-    result = []
-    for char in name:
-        if 'A' <= char <= 'Z' or 'a' <= char <= 'z' or '0' <= char <= '9':
-            result.append(char)
-        elif ord(char) > 128:
-            result.append(char)
-        else:
-            result.append('_')
-    return ''.join(result)
 
 
 if __name__ == '__main__':
