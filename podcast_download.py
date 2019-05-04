@@ -38,8 +38,12 @@ class PodcastDownload:
         self.write_episodes_file()
 
     def fetch_next_feed(self):
-        pass
-    #     self.feed.feed.
+        try:
+            for link in self.feed.feed.links:
+                if link.rel == 'next':
+                    self.next_feed = link.href
+        except error:
+            traceback.print_exc()
 
     def read_feed(self):
         wget.download(self.feed_url, self.create_feed_filename())
