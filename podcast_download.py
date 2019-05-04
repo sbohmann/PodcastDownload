@@ -27,13 +27,18 @@ class PodcastDownload:
         self.feed = None
         self.text = None
         self.downloaded_episode_filenames = []
+        self.next_feed = None
 
     def run(self):
         self.read_feed()
         self.feed = feedparser.parse(self.text)
+        self.fetch_next_feed()
         if DEBUG: print_feed.pretty_print(self.feed, "")
         self.download_files()
         self.write_episodes_file()
+
+    def fetch_next_feed(self):
+        self.feed.entries
 
     def read_feed(self):
         wget.download(self.feed_url, self.create_feed_filename())
@@ -91,6 +96,8 @@ if __name__ == '__main__':
     for argument in sys.argv[1:]:
         if argument.startswith("http://") or argument.startswith("https://"):
             feed_urls.append(argument)
+        elif argument == '--debug':
+            DEBUG = True
         elif argument == '--dangerously-ignore-ssl-validity':
             DANGEROUSLY_IGNORE_SSL_VALIDITY = True
         else:
