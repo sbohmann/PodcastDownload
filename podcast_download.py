@@ -37,7 +37,8 @@ class PodcastDownload:
         self.download_files()
         self.write_episodes_file()
 
-    # def fetch_next_feed(self):
+    def fetch_next_feed(self):
+        pass
     #     self.feed.feed.
 
     def read_feed(self):
