@@ -126,7 +126,11 @@ if __name__ == '__main__':
 
     for url in feed_urls:
         try:
-            print("feed url " + url)
-            PodcastDownload(url).run()
+            next_feed = url
+            while next_feed:
+                print("feed url " + next_feed)
+                download = PodcastDownload(next_feed)
+                download.run()
+                next_feed = download.next_feed
         except Exception as error:
             traceback.print_exc()
