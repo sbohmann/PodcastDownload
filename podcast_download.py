@@ -40,7 +40,9 @@ class PodcastDownload:
     def fetch_next_feed(self):
         try:
             for link in self.feed.feed.links:
+                print("link rel: " + link.rel + ", href: " + link.href)
                 if link.rel == 'next':
+                    print("setting self.next_feed")
                     self.next_feed = link.href
         except error:
             traceback.print_exc()
