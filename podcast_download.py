@@ -33,12 +33,12 @@ class PodcastDownload:
         self.read_feed()
         self.feed = feedparser.parse(self.text)
         self.fetch_next_feed()
-        if DEBUG: print_feed.pretty_print(self.feed, "")
+        if DEBUG: print_feed.pretty_print_feed(self.feed)
         self.download_files()
         self.write_episodes_file()
 
-    def fetch_next_feed(self):
-        self.feed.entries
+    # def fetch_next_feed(self):
+    #     self.feed.feed.
 
     def read_feed(self):
         wget.download(self.feed_url, self.create_feed_filename())
