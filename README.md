@@ -32,4 +32,4 @@ There's also the option
 
     --debug
 
-in case you're curious what's going on ^^
+in case you're curious about what's going on ^^
