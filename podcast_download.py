@@ -66,15 +66,15 @@ class PodcastDownload:
     def download_files(self):
         for entry in self.feed.entries:
             for link in entry.links:
-                url = link.href
-                original_filename = wget.detect_filename(url)
+                entry_url = link.href
+                original_filename = wget.detect_filename(entry_url)
                 _, extension = os.path.splitext(original_filename)
                 raw_filename = entry.title
                 filename = filenames.clean_filename(raw_filename) + extension
                 self.downloaded_episode_filenames.append(filename)
                 if not os.path.isfile(filename):
                     print("Downloading missing file [" + filename + "]")
-                    download(url, filename)
+                    download(entry_url, filename)
                 elif DEBUG:
                     print("Skipping existing file [" + filename + "]")
 
