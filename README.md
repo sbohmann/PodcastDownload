@@ -2,6 +2,8 @@
 
 Attention! This script may overrwrite existing files in the current directory! Only call from dedicated directories, usually one per rss feed!
 
+And please don't even think about distributing the files and information aquired by downloading feeds and linked files, using this tool or any other, unless explicitly permitted by the originator and with your full understanding of the terms and limits of such permission.
+
 Syntax:
 
     python3 <path to script>/podcast_download.py <feed url>
