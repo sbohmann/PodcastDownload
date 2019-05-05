@@ -55,20 +55,29 @@ class PodcastDownload:
     def download_files(self):
         for entry in self.feed.entries:
             for link in entry.links:
-                entry_url = link.href
-                original_filename = wget.detect_filename(entry_url)
-                if original_filename == 'download.wget':
-                    extension = ''
-                else:
-                    _, extension = os.path.splitext(original_filename)
-                raw_filename = entry.title
-                filename = filenames.clean_filename(raw_filename) + extension
-                self.downloaded_episode_filenames.append(filename)
-                if not os.path.isfile(filename):
-                    print("Downloading missing file [" + filename + "]")
-                    download_file(entry_url, filename)
-                elif DEBUG:
-                    print("Skipping existing file [" + filename + "]")
+                self.try_download_file(entry, link)
+
+    def try_download_file(self, entry, link):
+        try:
+            self.download_file(entry, link)
+        except error:
+            traceback.print_exc()
+
+    def download_file(self, entry, link):
+        entry_url = link.href
+        original_filename = wget.detect_filename(entry_url)
+        if original_filename == 'download.wget':
+            extension = ''
+        else:
+            _, extension = os.path.splitext(original_filename)
+        raw_filename = entry.title
+        filename = filenames.clean_filename(raw_filename) + extension
+        self.downloaded_episode_filenames.append(filename)
+        if not os.path.isfile(filename):
+            print("Downloading missing file [" + filename + "]")
+            download_file(entry_url, filename)
+        elif DEBUG:
+            print("Skipping existing file [" + filename + "]")
 
     def write_episodes_file(self):
         filename = "episodes_" + self.utc_timestamp_string + ".txt"
