@@ -34,7 +34,8 @@ class PodcastDownload:
         self.read_feed()
         self.feed = feedparser.parse(self.feed_text)
         self.fetch_next_feed()
-        if DEBUG: print_feed.pretty_print_feed(self.feed)
+        if DEBUG:
+            print_feed.pretty_print_feed(self.feed)
         self.download_files()
         self.write_episodes_file()
 
@@ -43,7 +44,7 @@ class PodcastDownload:
             for link in self.feed.feed.links:
                 if link.rel == 'next':
                     self.next_feed = link.href
-        except error:
+        except Exception as _:
             traceback.print_exc()
 
     def read_feed(self):
@@ -60,7 +61,7 @@ class PodcastDownload:
     def try_download_file(self, entry, link):
         try:
             self.download_file(entry, link)
-        except error:
+        except Exception as _:
             traceback.print_exc()
 
     def download_file(self, entry, link):
@@ -98,11 +99,11 @@ def create_utc_timestamp_string(utc_timestamp):
                             utc_timestamp.microsecond)
 
 
-def download_file(url, filename, return_text=False):
+def download_file(file_url, filename, return_text=False):
     headers = {'User-Agent': USER_AGENT} if USER_AGENT else {}
-    result = requests.get(url, headers=headers)
+    result = requests.get(file_url, headers=headers)
     if not result.ok:
-        raise ValueError('Request to url [' + url + '] failed f=with status code ' + str(result.status_code))
+        raise ValueError('Request to url [' + file_url + '] failed f=with status code ' + str(result.status_code))
     file = open(filename, 'wb')
     file.write(result.content)
     file.close()
@@ -150,5 +151,5 @@ if __name__ == '__main__':
                 download = PodcastDownload(next_feed)
                 download.run()
                 next_feed = download.next_feed
-        except Exception as error:
+        except Exception as _:
             traceback.print_exc()
