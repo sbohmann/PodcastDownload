@@ -14,7 +14,7 @@ You probably need to install the libraries it depends upon, using e.g. pip. Plea
 
 When downloading a feed for file fails with status code 403, "forbidden", I usually succeed by setting a the user agent to the magic value 'Marquise'.
 
-Some web servers expect at least something as the user agent, I think I've seen this with most often with the IIS.
+Some web servers seem to expect at least something as the user agent; I think I've seen this with most often with the IIS.
 
 Just add this argument to your call (without the ...)
 
