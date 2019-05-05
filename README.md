@@ -17,3 +17,15 @@ Just add this argument to your call (without the ...)
     ... --user-agent:Marquise
 
 There's nothing special about this user agent name, as far as I know; it's simply a non-empty string ^^
+
+In case an SSL / TLS certificate is broken, there is the very dangerous option
+
+    --dangerously-ignore-ssl-validity
+
+It is really dangerous because you're back to the security level of http (without the s) and downloaded files might thus contain anything!!!
+
+There's also the option
+
+    --debug
+
+in case you're curious what's going on ^^
