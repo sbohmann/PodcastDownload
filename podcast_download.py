@@ -2,14 +2,15 @@ import datetime
 import os.path
 import ssl
 import sys
+import time
 import traceback
 
 import feedparser
-import wget
 import requests
+import wget
 
-import print_feed
 import filenames
+import print_feed
 
 GET = "GET"
 UTF8 = "utf-8"
@@ -104,9 +105,11 @@ def download_file(file_url, filename, return_text=False):
     result = requests.get(file_url, headers=headers)
     if not result.ok:
         raise ValueError('Request to url [' + file_url + '] failed f=with status code ' + str(result.status_code))
-    file = open(filename, 'wb')
+    temporary_filename = filename + '.temp.' + str(time.time())
+    file = open(temporary_filename, 'wb')
     file.write(result.content)
     file.close()
+    os.rename(temporary_filename, filename)
     if return_text:
         return result.content.decode(UTF8)
 
