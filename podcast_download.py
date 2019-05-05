@@ -48,7 +48,7 @@ class PodcastDownload:
             traceback.print_exc()
 
     def read_feed(self):
-        download(self.feed_url, self.create_feed_filename())
+        download_file(self.feed_url, self.create_feed_filename())
         feed_response = urllib.request.urlopen(self.feed_url)
         self.read_response_text(feed_response)
         feed_response.close()
@@ -74,7 +74,7 @@ class PodcastDownload:
                 self.downloaded_episode_filenames.append(filename)
                 if not os.path.isfile(filename):
                     print("Downloading missing file [" + filename + "]")
-                    download(entry_url, filename)
+                    download_file(entry_url, filename)
                 elif DEBUG:
                     print("Skipping existing file [" + filename + "]")
 
@@ -97,7 +97,7 @@ def create_utc_timestamp_string(utc_timestamp):
                             utc_timestamp.microsecond)
 
 
-def download(url, filename):
+def download_file(url, filename):
     if USER_AGENT:
         result = requests.get(url)
         if not result.ok:
