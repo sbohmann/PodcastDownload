@@ -8,7 +8,7 @@ Syntax:
 
     python3 <path to script>/podcast_download.py <feed url>
 
-It writes to the current directory. Thus you will should not call it from the path containing the script.
+It writes to the current directory. Thus you should not call it from the path containing the script.
 
 You probably need to install the libraries it depends upon, using e.g. pip. Please consult your operating system and python installation specific documentation concerning python modules (and probably mentioning pip) in case you don't quite know what I'm talking about right now.
 
