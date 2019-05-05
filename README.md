@@ -12,7 +12,7 @@ It writes to the current directory. Thus you should not call it from the path co
 
 You probably need to install the libraries it depends upon, using e.g. pip. Please consult your operating system and python installation specific documentation concerning python modules (and probably mentioning pip) in case you don't quite know what I'm talking about right now.
 
-When downloading a feed for file fails with status code 403, "forbidden", I set usually succeed by setting a the user agent to the magic value 'Marquise'.
+When downloading a feed for file fails with status code 403, "forbidden", I usually succeed by setting a the user agent to the magic value 'Marquise'.
 
 Some web servers expect at least something as the user agent, I think I've seen this with most often with the IIS.
 
