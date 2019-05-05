@@ -26,7 +26,7 @@ In case an SSL / TLS certificate is broken, there is the very dangerous option
 
     --dangerously-ignore-ssl-validity
 
-It is really dangerous because you're back to the security level of http (without the s) and downloaded files might thus contain anything!!!
+It is really dangerous because you're back to the security level of http (without the s), thus downloaded files might contain anything!!!
 
 There's also the option
 
