@@ -99,7 +99,8 @@ def create_utc_timestamp_string(utc_timestamp):
 
 def download_file(url, filename):
     if USER_AGENT:
-        result = requests.get(url)
+        headers = {'User-Agent': USER_AGENT}
+        result = requests.get(url, headers=headers)
         if not result.ok:
             raise ValueError('Request to url [' + url + '] failed f=with status code ' + str(result.status_code))
         file = open(filename, 'w')
