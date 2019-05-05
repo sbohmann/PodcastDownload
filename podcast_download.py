@@ -57,7 +57,10 @@ class PodcastDownload:
             for link in entry.links:
                 entry_url = link.href
                 original_filename = wget.detect_filename(entry_url)
-                _, extension = os.path.splitext(original_filename)
+                if original_filename == 'download.wget':
+                    extension = ''
+                else:
+                    _, extension = os.path.splitext(original_filename)
                 raw_filename = entry.title
                 filename = filenames.clean_filename(raw_filename) + extension
                 self.downloaded_episode_filenames.append(filename)
