@@ -3,7 +3,6 @@ import os.path
 import ssl
 import sys
 import traceback
-import urllib.request
 
 import feedparser
 import wget
@@ -27,13 +26,13 @@ class PodcastDownload:
         self.utc_timestamp_string = create_utc_timestamp_string(self.utc_timestamp)
         self.feed_url = feed_url
         self.feed = None
-        self.text = None
+        self.feed_text = None
         self.downloaded_episode_filenames = []
         self.next_feed = None
 
     def run(self):
         self.read_feed()
-        self.feed = feedparser.parse(self.text)
+        self.feed = feedparser.parse(self.feed_text)
         self.fetch_next_feed()
         if DEBUG: print_feed.pretty_print_feed(self.feed)
         self.download_files()
@@ -48,20 +47,10 @@ class PodcastDownload:
             traceback.print_exc()
 
     def read_feed(self):
-        download_file(self.feed_url, self.create_feed_filename())
-        feed_response = urllib.request.urlopen(self.feed_url)
-        self.read_response_text(feed_response)
-        feed_response.close()
+        self.feed_text = download_file(self.feed_url, self.create_feed_filename(), True)
 
     def create_feed_filename(self):
         return "feed_" + self.utc_timestamp_string + ".xml"
-
-    def read_response_text(self, feed_response):
-        self.text = ""
-        while True:
-            line = feed_response.readline().decode(UTF8)
-            if not line: break
-            self.text += line
 
     def download_files(self):
         for entry in self.feed.entries:
@@ -97,17 +86,16 @@ def create_utc_timestamp_string(utc_timestamp):
                             utc_timestamp.microsecond)
 
 
-def download_file(url, filename):
-    if USER_AGENT:
-        headers = {'User-Agent': USER_AGENT}
-        result = requests.get(url, headers=headers)
-        if not result.ok:
-            raise ValueError('Request to url [' + url + '] failed f=with status code ' + str(result.status_code))
-        file = open(filename, 'w')
-        file.write(result.content)
-        file.close()
-    else:
-        wget.download(url, filename)
+def download_file(url, filename, return_text=False):
+    headers = {'User-Agent': USER_AGENT} if USER_AGENT else {}
+    result = requests.get(url, headers=headers)
+    if not result.ok:
+        raise ValueError('Request to url [' + url + '] failed f=with status code ' + str(result.status_code))
+    file = open(filename, 'wb')
+    file.write(result.content)
+    file.close()
+    if return_text:
+        return result.content.decode(UTF8)
 
 
 if __name__ == '__main__':
@@ -121,8 +109,8 @@ if __name__ == '__main__':
             DEBUG = True
         elif argument == '--dangerously-ignore-ssl-validity':
             DANGEROUSLY_IGNORE_SSL_VALIDITY = True
-        elif argument.startswith == user_agent_prefix:
-            USER_AGENT = argument[user_agent_prefix:]
+        elif argument.startswith(user_agent_prefix):
+            USER_AGENT = argument[len(user_agent_prefix):]
         else:
             print("ignoring argument [" + argument + "]")
 
