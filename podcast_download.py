@@ -7,6 +7,7 @@ import urllib.request
 
 import feedparser
 import wget
+import requests
 
 import print_feed
 import filenames
@@ -15,6 +16,7 @@ GET = "GET"
 UTF8 = "utf-8"
 DEBUG = False
 DANGEROUSLY_IGNORE_SSL_VALIDITY = False
+USER_AGENT = None
 
 print(sys.argv)
 
@@ -46,7 +48,7 @@ class PodcastDownload:
             traceback.print_exc()
 
     def read_feed(self):
-        wget.download(self.feed_url, self.create_feed_filename())
+        download(self.feed_url, self.create_feed_filename())
         feed_response = urllib.request.urlopen(self.feed_url)
         self.read_response_text(feed_response)
         feed_response.close()
@@ -72,7 +74,7 @@ class PodcastDownload:
                 self.downloaded_episode_filenames.append(filename)
                 if not os.path.isfile(filename):
                     print("Downloading missing file [" + filename + "]")
-                    wget.download(url, filename)
+                    download(url, filename)
                 elif DEBUG:
                     print("Skipping existing file [" + filename + "]")
 
@@ -95,16 +97,31 @@ def create_utc_timestamp_string(utc_timestamp):
                             utc_timestamp.microsecond)
 
 
+def download(url, filename):
+    if USER_AGENT:
+        result = requests.get(url)
+        if not result.ok:
+            raise ValueError('Request to url [' + url + '] failed f=with status code ' + str(result.status_code))
+        file = open(filename, 'w')
+        file.write(result.content)
+        file.close()
+    else:
+        wget.download(url, filename)
+
+
 if __name__ == '__main__':
     feed_urls = []
 
     for argument in sys.argv[1:]:
+        user_agent_prefix = '--user-agent:'
         if argument.startswith("http://") or argument.startswith("https://"):
             feed_urls.append(argument)
         elif argument == '--debug':
             DEBUG = True
         elif argument == '--dangerously-ignore-ssl-validity':
             DANGEROUSLY_IGNORE_SSL_VALIDITY = True
+        elif argument.startswith == user_agent_prefix:
+            USER_AGENT = argument[user_agent_prefix:]
         else:
             print("ignoring argument [" + argument + "]")
 
