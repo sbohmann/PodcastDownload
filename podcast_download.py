@@ -90,7 +90,7 @@ class PodcastDownload:
 
 
 def create_utc_timestamp_string(utc_timestamp):
-    return "%04d%02d%02dT%02d%02d%02d.%02dZ" % \
+    return "%04d%02d%02dT%02d%02d%02d.%06dZ" % \
                            (utc_timestamp.year,
                             utc_timestamp.month,
                             utc_timestamp.day,
