@@ -21,4 +21,4 @@ def _relevant_filename(file):
 
 
 def _excluded_filename(file):
-    return file != 'PodcastDownload' and not file.startswith('.')
+    return file == 'PodcastDownload' or file.startswith('.')
