@@ -25,7 +25,7 @@ class Podcast:
         return episode_dates[-1] if episode_dates else None
 
 
-_episodes_file_regex = re.compile('episodes_(\\d{8}T\\d{6}\\.{\\d{6}Z).txt')
+_episodes_file_regex = re.compile('episodes_(\\d{8}T\\d{6}\\.\\d{6}Z)\\.txt')
 
 
 def _episodes_file_date(file):
