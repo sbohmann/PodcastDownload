@@ -23,7 +23,7 @@ class Podcast:
         episode_dates = list(filter(None, map(_episodes_file_date, os.listdir(self.name))))
         episode_dates.sort()
         if episode_dates:
-            return 'episodes_' + episode_dates[-1] + '.txt'
+            return os.path.join(self.name, 'episodes_' + episode_dates[-1] + '.txt')
         else:
             return None
 
