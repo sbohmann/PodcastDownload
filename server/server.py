@@ -20,7 +20,7 @@ def podcast_page(name):
 
 
 @app.route('/podcast/<name>/episode/<episode>')
-def podcast_page(name, episode):
+def podcast_episode(name, episode):
     send_from_directory(directory=name, filename=episode)
 
 
