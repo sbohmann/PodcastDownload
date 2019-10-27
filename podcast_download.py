@@ -84,20 +84,23 @@ class PodcastDownload:
     def write_episodes_file(self):
         filename = "episodes_" + self.utc_timestamp_string + ".txt"
         file = open(filename, 'w')
+        written = set()
         for episode_filename in self.downloaded_episode_filenames:
-            file.write(episode_filename + '\n')
+            if episode_filename not in written:
+                file.write(episode_filename + '\n')
+            written.add(episode_filename)
         file.close()
 
 
 def create_utc_timestamp_string(utc_timestamp):
     return "%04d%02d%02dT%02d%02d%02d.%06dZ" % \
-                           (utc_timestamp.year,
-                            utc_timestamp.month,
-                            utc_timestamp.day,
-                            utc_timestamp.hour,
-                            utc_timestamp.minute,
-                            utc_timestamp.second,
-                            utc_timestamp.microsecond)
+           (utc_timestamp.year,
+            utc_timestamp.month,
+            utc_timestamp.day,
+            utc_timestamp.hour,
+            utc_timestamp.minute,
+            utc_timestamp.second,
+            utc_timestamp.microsecond)
 
 
 def download_file(file_url, filename, return_text=False):
