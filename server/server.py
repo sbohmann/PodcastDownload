@@ -21,7 +21,7 @@ def podcast_page(name):
 
 @app.route('/podcast/<name>/episode/<episode>')
 def podcast_episode(name, episode):
-    send_from_directory(directory=name, filename=episode)
+    return send_from_directory(directory=name, filename=episode)
 
 
 app.run(debug=True, host='0.0.0.0', port='9100')
