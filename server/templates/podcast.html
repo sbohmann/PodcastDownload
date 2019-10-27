@@ -1,0 +1,8 @@
+{% extends 'page.html' %}
+
+{% block content %}
+<h1>{{ name }}</h1>
+{% for episode in episodes %}
+<h2>{{ episode }}</h2>
+{% endfor %}
+{% endblock %}
