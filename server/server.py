@@ -15,7 +15,7 @@ def index():
 
 
 @app.route('/podcast/<name>')
-def index(name):
+def podcast_page(name):
     return podcast.Podcast(name).render()
 
 
