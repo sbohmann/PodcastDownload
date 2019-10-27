@@ -22,7 +22,10 @@ class Podcast:
     def _get_latest_episodes_file(self):
         episode_dates = list(filter(None, map(_episodes_file_date, os.listdir(self.name))))
         episode_dates.sort()
-        return episode_dates[-1] if episode_dates else None
+        if episode_dates:
+            return 'episodes_' + episode_dates[-1] + '.txt'
+        else:
+            return None
 
 
 _episodes_file_regex = re.compile('episodes_(\\d{8}T\\d{6}\\.\\d{6}Z)\\.txt')
