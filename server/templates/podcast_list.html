@@ -1,0 +1,8 @@
+{% extends 'page.html' %}
+
+{% block content %}
+<h1>Podcasts</h1>
+{% for name in names %}
+<h2>{{ name }}</h2>
+{% endfor %}
+{% endblock %}
