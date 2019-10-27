@@ -33,6 +33,7 @@ def _episodes_file_date(file):
     if match:
         return match[1]
     else:
+        print('Ignoring file [' + file + ']')
         return None
 
 
