@@ -3,6 +3,6 @@
 {% block content %}
 <h1>{{ name }}</h1>
 {% for episode in episodes %}
-    <p><a href="{{ episode }}">{{ episode }}</a></p>
+    <p><a href="episode/{{ episode }}">{{ episode }}</a></p>
 {% endfor %}
 {% endblock %}

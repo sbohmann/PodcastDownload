@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 import os
 
 import podcast_list
@@ -17,6 +17,11 @@ def index():
 @app.route('/podcast/<name>')
 def podcast_page(name):
     return podcast.Podcast(name).render()
+
+
+@app.route('/podcast/<name>/episode/<episode>')
+def podcast_page(name, episode):
+    send_from_directory(directory=name, filename=episode)
 
 
 app.run(debug=True, host='0.0.0.0', port='9100')
