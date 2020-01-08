@@ -17,6 +17,8 @@ UTF8 = "utf-8"
 DEBUG = False
 DANGEROUSLY_IGNORE_SSL_VALIDITY = False
 USER_AGENT = None
+USERNAME = None
+PASSWORD = None
 
 print(sys.argv)
 
@@ -105,7 +107,12 @@ def create_utc_timestamp_string(utc_timestamp):
 
 def download_file(file_url, filename, return_text=False):
     headers = {'User-Agent': USER_AGENT} if USER_AGENT else {}
-    result = requests.get(file_url, headers=headers)
+    if (USERNAME is not None or PASSWORD is not None):
+    	username = USERNAME if USERNAME is not None else ''
+    	password = PASSWORD if PASSWORD is not None else ''
+    	result = requests.get(file_url, headers=headers, auth=(username, password))
+    else:
+    	result = requests.get(file_url, headers=headers)
     if not result.ok:
         raise ValueError('Request to url [' + file_url + '] failed f=with status code ' + str(result.status_code))
     temporary_filename = filename + '.temp.' + str(time.time())
@@ -122,6 +129,8 @@ if __name__ == '__main__':
 
     for argument in sys.argv[1:]:
         user_agent_prefix = '--user-agent:'
+        username_prefix = '--username:'
+        password_prefix = '--password:'
         if argument.startswith("http://") or argument.startswith("https://"):
             feed_urls.append(argument)
         elif argument == '--debug':
@@ -130,6 +139,10 @@ if __name__ == '__main__':
             DANGEROUSLY_IGNORE_SSL_VALIDITY = True
         elif argument.startswith(user_agent_prefix):
             USER_AGENT = argument[len(user_agent_prefix):]
+        elif argument.startswith(username_prefix):
+        	USERNAME = argument[len(username_prefix):]
+        elif argument.startswith(password_prefix):
+        	PASSWORD = argument[len(password_prefix):]
         else:
             print("ignoring argument [" + argument + "]")
 
